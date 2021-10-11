@@ -4,6 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import '@ya.praktikum/react-developer-burger-ui-components/dist/ui/fonts/fonts.css';
+import '@ya.praktikum/react-developer-burger-ui-components/dist/ui/common.css';
+import '@ya.praktikum/react-developer-burger-ui-components/dist/ui/box.css';
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
