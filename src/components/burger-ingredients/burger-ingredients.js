@@ -24,9 +24,9 @@ const BurgerIngredients = (props) => {
     // Массив булок
     const rollsItems = rolls.map((item) => {
         return (
-            <div className={BurgerIngredientsStyles.card}>
+            <div key={item._id} className={BurgerIngredientsStyles.card}>
                 <Counter count={1} size="default" />
-                <img src={item.image} className={BurgerIngredientsStyles.card__img} />
+                <img src={item.image} alt={item.name} className={BurgerIngredientsStyles.card__img} />
                 <div className={BurgerIngredientsStyles.card__price}>
                     <p className="text_type_digits-default mr-1">{item.price}</p>
                     <CurrencyIcon />
@@ -39,8 +39,8 @@ const BurgerIngredients = (props) => {
     // Массив начинок
     const fillingsItems = fillings.map((item) => {
         return (
-            <div className={BurgerIngredientsStyles.card}>
-                <img src={item.image} className={BurgerIngredientsStyles.card__img} />
+            <div key={item._id} className={BurgerIngredientsStyles.card}>
+                <img src={item.image} alt={item.name} className={BurgerIngredientsStyles.card__img} />
                 <div className={BurgerIngredientsStyles.card__price}>
                     <p className="text_type_digits-default mr-1">{item.price}</p>
                     <CurrencyIcon />
@@ -53,8 +53,8 @@ const BurgerIngredients = (props) => {
     // Массив соусов
     const saucesItems = sauces.map((item) => {
         return (
-            <div className={BurgerIngredientsStyles.card}>
-                <img src={item.image} className={BurgerIngredientsStyles.card__img} />
+            <div key={item._id} className={BurgerIngredientsStyles.card}>
+                <img src={item.image} alt={item.name} className={BurgerIngredientsStyles.card__img} />
                 <div className={BurgerIngredientsStyles.card__price}>
                     <p className="text_type_digits-default mr-1">{item.price}</p>
                     <CurrencyIcon />

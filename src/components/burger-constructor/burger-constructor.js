@@ -6,11 +6,10 @@ const BurgerConstructor = (props) => {
     const ingredientsLastIndex = props.ingredients.length - 1;
     const constructorItems = props.ingredients.map((item, i) => {
         return (
-            <div className={`${BurgerConstructorStyles.constructor__item} 
+            <div key={item._id} className={`${BurgerConstructorStyles.constructor__item} 
             ${i === 0 || i === ingredientsLastIndex ? "ml-8" : ''}`} >
                 {i === 0 || i === ingredientsLastIndex ? '' : <DragIcon />}
                 <ConstructorElement
-                    key={item._id}
                     type={i === 0 ? "top" : '' || i === ingredientsLastIndex ? "bottom" : ''}
                     isLocked={i === 0 || i === ingredientsLastIndex ? true : false}
                     text={item.name}
