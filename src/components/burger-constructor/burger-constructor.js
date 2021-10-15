@@ -10,16 +10,15 @@ const BurgerConstructor = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const totalCost = props.ingredients.reduce((sum, current) => sum + current.price, 0);
-    const ingredientsLastIndex = props.ingredients.length - 1;
     const constructorItems = props.ingredients.map((item, i) => {
         return (
             <div key={item._id} className={`${BurgerConstructorStyles.constructor__item} 
-            ${i === 0 || i === ingredientsLastIndex ? "ml-8" : ''}`} >
-                {i === 0 || i === ingredientsLastIndex ? '' : <DragIcon />}
+            ${i === 0 ? "ml-8" : ''}`} >
+                {i === 0 ? '' : <DragIcon />}
                 <ConstructorElement
-                    type={i === 0 ? "top" : '' || i === ingredientsLastIndex ? "bottom" : ''}
-                    isLocked={i === 0 || i === ingredientsLastIndex ? true : false}
-                    text={`${item.name} ${i === 0 ? "(верх)" : '' || i === ingredientsLastIndex ? "(низ)" : ''}`}
+                    type={i === 0 ? "top" : ''}
+                    isLocked={i === 0 ? true : false}
+                    text={`${item.name} ${i === 0 ? "(верх)" : ''}`}
                     price={item.price}
                     thumbnail={item.image}
                 />
@@ -33,7 +32,7 @@ const BurgerConstructor = (props) => {
 
     const closeModal = (e) => {
         let target = e.nativeEvent.target;
-        
+
         if (target.getAttribute('backdrop')) {
             setModalVisible(false);
         } else if (target.closest('span') && target.closest('span').getAttribute('backdrop')) {
@@ -60,9 +59,17 @@ const BurgerConstructor = (props) => {
             <section className={BurgerConstructorStyles.constructor__list}>
                 {constructorItems[0]}
                 <div className={BurgerConstructorStyles.constructor_scroll}>
-                    {constructorItems.slice(1, constructorItems.length - 1)}
+                    {constructorItems.slice(1, constructorItems.length)}
                 </div>
-                {constructorItems[constructorItems.length - 1]}
+                <div className="ml-8">
+                    <ConstructorElement
+                        type="bottom"
+                        isLocked="true"
+                        text={`${props.ingredients[0].name} (низ)`}
+                        price={props.ingredients[0].price}
+                        thumbnail={props.ingredients[0].image}
+                    />
+                </div>
             </section>
             <footer className={`${BurgerConstructorStyles.constructor__info} mt-10`}>
                 <div className="mr-10">
