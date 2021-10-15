@@ -14,6 +14,10 @@
     position: relative;
 }
 
+.card:hover {
+    cursor: pointer;
+}
+
 .card__img {
     padding: 0 16px;
 }
