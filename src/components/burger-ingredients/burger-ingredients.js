@@ -24,28 +24,18 @@ const BurgerIngredients = (props) => {
     }
     
     const closeModal = (e) => {
-        let target = e.nativeEvent.target;
-        
-        if (target.getAttribute('backdrop')) {
+        if (e.type === 'keydown') {
             setModalVisible(false);
-        } else if (target.closest('span') && target.closest('span').getAttribute('backdrop')) {
-            setModalVisible(false);
+        } else {
+            let target = e.nativeEvent.target;
+    
+            if (target.getAttribute('backdrop')) {
+                setModalVisible(false);
+            } else if (target.closest('span') && target.closest('span').getAttribute('backdrop')) {
+                setModalVisible(false);
+            }
         }
     }
-
-    const pressEscHandle = (e) => {
-        if (e.code === 'Escape') {
-            setModalVisible(false);
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', pressEscHandle)
-
-        return () => {
-            document.removeEventListener('keydown', pressEscHandle)
-        }
-    }, [])
 
     // Распределение ингредиентов по типу
     props.ingredients.forEach((item) => {

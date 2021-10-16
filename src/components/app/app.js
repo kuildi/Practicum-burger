@@ -7,16 +7,20 @@ import BurgerIngredients from '../burger-ingredients/burger-ingredients';
 
 function App() {
   const [data, setData] = useState(null);
-  const domainUrl = 'norma.nomoreparties.space';
+  const apiUrl = 'https://norma.nomoreparties.space/api/ingredients';
 
   const getData = async () => {
     try {
-      let response = await fetch(`https://${domainUrl}/api/ingredients`);
+      let response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error('Ответ сети был не ok.');
+      }
+
       let responseData = await response.json();
 
       setData(responseData.data);
     } catch (error) {
-      console.log(error);
+      console.log('Возникла проблема с запросом: ', error.message);
     }
   }
 

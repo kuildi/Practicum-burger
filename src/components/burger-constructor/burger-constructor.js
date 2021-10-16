@@ -12,7 +12,7 @@ const BurgerConstructor = (props) => {
     const totalCost = props.ingredients.reduce((sum, current) => sum + current.price, 0);
     const constructorItems = props.ingredients.map((item, i) => {
         return (
-            <div key={item._id} className={`${BurgerConstructorStyles.constructor__item} 
+            <div key={i} className={`${BurgerConstructorStyles.constructor__item} 
             ${i === 0 ? "ml-8" : ''}`} >
                 {i === 0 ? '' : <DragIcon />}
                 <ConstructorElement
@@ -31,28 +31,18 @@ const BurgerConstructor = (props) => {
     }
 
     const closeModal = (e) => {
-        let target = e.nativeEvent.target;
-
-        if (target.getAttribute('backdrop')) {
+        if (e.type === 'keydown') {
             setModalVisible(false);
-        } else if (target.closest('span') && target.closest('span').getAttribute('backdrop')) {
-            setModalVisible(false);
+        } else {
+            let target = e.nativeEvent.target;
+    
+            if (target.getAttribute('backdrop')) {
+                setModalVisible(false);
+            } else if (target.closest('span') && target.closest('span').getAttribute('backdrop')) {
+                setModalVisible(false);
+            }
         }
     }
-
-    const pressEscHandle = (e) => {
-        if (e.code === 'Escape') {
-            setModalVisible(false);
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', pressEscHandle)
-
-        return () => {
-            document.removeEventListener('keydown', pressEscHandle)
-        }
-    }, [])
 
     return (
         <section className="pt-25 pl-4 pr-4">
