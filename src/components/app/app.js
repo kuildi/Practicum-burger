@@ -1,49 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import AppStyles from './app.module.css';
 import AppHeader from '../app-header/app-header';
 import BurgerConstructor from '../burger-constructor/burger-constructor';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients';
+import { getIngredients } from '../../services/actions';
 
 function App() {
-  const [data, setData] = useState(null);
-  const apiUrl = 'https://norma.nomoreparties.space/api/ingredients';
-
-  const getData = async () => {
-    try {
-      let response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error('Ответ сети был не ok.');
-      }
-
-      let responseData = await response.json();
-
-      setData(responseData.data);
-    } catch (error) {
-      console.log('Возникла проблема с запросом: ', error.message);
-    }
-  }
+  const dispatch = useDispatch();
+  const data = useSelector(store => store.ingredients.items);
+  const loader = useSelector(store => store.ingredients.ingredientsRequest)
 
   useEffect(() => {
-    getData();
-  }, [])
+    dispatch(getIngredients());
+  }, [dispatch]);
 
-
-  return (
-    <section className="pl-10 pr-10 pt-10">
-      <AppHeader />
-      <section className={AppStyles.main_container}>
-        {
-          data ?
-            <>
-              <BurgerIngredients ingredients={data} />
-              <BurgerConstructor ingredients={data} />
-            </>
-            : null
-        }
+  if (loader) {
+    return (
+      <p className={`${AppStyles.align_center} text_type_main-medium`}>Loading...</p>
+    )
+  } else {
+    return (
+      <section className="pl-10 pr-10 pt-10">
+        <AppHeader />
+        <section className={AppStyles.main_container}>
+          <DndProvider backend={HTML5Backend}>
+            <BurgerIngredients ingredients={data} />
+            <BurgerConstructor />
+          </DndProvider>
+        </section>
       </section>
-    </section>
-  );
+    );
+  }
 }
 
 export default App;

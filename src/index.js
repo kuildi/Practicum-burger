@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 
 import './index.css';
 import App from './components/app/app';
+import {rootReducer} from './services/reducers/root-reducer';
 import reportWebVitals from './reportWebVitals';
 
 import '@ya.praktikum/react-developer-burger-ui-components/dist/ui/fonts/fonts.css';

@@ -12,9 +12,13 @@
     min-height: 100px;
 }
 
-.constructor__item {
-    display: flex;
-    align-items: center;
+.align_center {
+    align-self: center;
+}
+
+.bordered {
+    border: 2px dotted #8585AD;
+    border-radius: 54px;
 }
 
 .constructor__info {

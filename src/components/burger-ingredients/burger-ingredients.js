@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Counter, Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import { ADD_VIEWD_INGREDIENT, REMOVE_VIEWD_INGREDIENT } from "../../services/actions/constants";
+import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
 import BurgerIngredientsStyles from './burger-ingredients.module.css';
 import Modal from "../modal/modal";
+import Ingredient from "../ingredient/ingredient";
 import IngredientDetails from "../ingredient-details/ingredient-details";
-import PropTypes from 'prop-types';
 
 
 const BurgerIngredients = (props) => {
+    const dispatch = useDispatch();
+    const viewedIngredient = useSelector(store => store.viewedIngredient.viewedIngredient);
+
     const [current, setCurrent] = useState('one');
     const [modalVisible, setModalVisible] = useState(false);
-    const [ingredientDetails, setIngredientDetails] = useState(null);
 
     let rolls = [];
     let sauces = [];
@@ -20,19 +26,34 @@ const BurgerIngredients = (props) => {
         let clickedIngredientData = props.ingredients.find(item => item._id === clickedIngredientId);
 
         setModalVisible(true);
-        setIngredientDetails(clickedIngredientData);
+        dispatch({
+            type: ADD_VIEWD_INGREDIENT,
+            data: clickedIngredientData
+        })
     }
-    
+
     const closeModal = (e) => {
         if (e.type === 'keydown') {
             setModalVisible(false);
+            dispatch({
+                type: REMOVE_VIEWD_INGREDIENT,
+                data: {}
+            })
         } else {
             let target = e.nativeEvent.target;
-    
+
             if (target.getAttribute('backdrop')) {
                 setModalVisible(false);
+                dispatch({
+                    type: REMOVE_VIEWD_INGREDIENT,
+                    data: {}
+                })
             } else if (target.closest('span') && target.closest('span').getAttribute('backdrop')) {
                 setModalVisible(false);
+                dispatch({
+                    type: REMOVE_VIEWD_INGREDIENT,
+                    data: {}
+                })
             }
         }
     }
@@ -51,52 +72,52 @@ const BurgerIngredients = (props) => {
     });
 
     // Массив булок
-    const rollsItems = rolls.map((item) => {
-        return (
-            <div key={item._id} id={item._id} className={BurgerIngredientsStyles.card} onClick={showModal}>
-                <Counter count={1} size="default" />
-                <img src={item.image} alt={item.name} className={BurgerIngredientsStyles.card__img} />
-                <div className={BurgerIngredientsStyles.card__price}>
-                    <p className="text_type_digits-default mr-1">{item.price}</p>
-                    <CurrencyIcon />
-                </div>
-                <p className="text_type_main-default">{item.name}</p>
-            </div>
-        )
-    });
+    const rollsItems = rolls.map((item) =>
+        <Ingredient key={item._id} id={item._id} onClick={showModal} {...item} />
+    );
 
     // Массив начинок
-    const fillingsItems = fillings.map((item) => {
-        return (
-            <div key={item._id} id={item._id} className={BurgerIngredientsStyles.card} onClick={showModal}>
-                <img src={item.image} alt={item.name} className={BurgerIngredientsStyles.card__img} />
-                <div className={BurgerIngredientsStyles.card__price}>
-                    <p className="text_type_digits-default mr-1">{item.price}</p>
-                    <CurrencyIcon />
-                </div>
-                <p className="text_type_main-default">{item.name}</p>
-            </div>
-        )
-    });
+    const fillingsItems = fillings.map((item) =>
+        <Ingredient key={item._id} id={item._id} onClick={showModal} {...item} />
+    );
 
     // Массив соусов
-    const saucesItems = sauces.map((item) => {
-        return (
-            <div key={item._id} id={item._id} className={BurgerIngredientsStyles.card} onClick={showModal}>
-                <img src={item.image} alt={item.name} className={BurgerIngredientsStyles.card__img} />
-                <div className={BurgerIngredientsStyles.card__price}>
-                    <p className="text_type_digits-default mr-1">{item.price}</p>
-                    <CurrencyIcon />
-                </div>
-                <p className="text_type_main-default">{item.name}</p>
-            </div>
-        )
-    });
+    const saucesItems = sauces.map((item) =>
+        <Ingredient key={item._id} id={item._id} onClick={showModal} {...item} />
+    );
+
+    // Функция отслеживания активного таба
+    const checkTabs = () => {
+        let tabsOffsetY = document.querySelector('#tabs').getBoundingClientRect().y;
+        let sectionsHeaders = document.querySelectorAll('.section-header');
+        let diffsArr = [];
+
+        for (let i = 0; i < sectionsHeaders.length; i++) {
+            diffsArr.push(Math.abs(tabsOffsetY - sectionsHeaders[i].getBoundingClientRect().y));
+        }
+
+        let minDiff = diffsArr.indexOf(Math.min(...diffsArr));
+
+        if (minDiff === 0) {
+            setCurrent('one');
+        } else if (minDiff === 1) {
+            setCurrent('two');
+        } else setCurrent('three');
+    }
+
+    useEffect(() => {
+        document.getElementById('scrollContainer').addEventListener('scroll', checkTabs);
+
+        return () => {
+            document.getElementById('scrollContainer') && 
+            document.getElementById('scrollContainer').removeEventListener('scroll', checkTabs);
+        }
+    }, [current]);
 
     return (
-        <section className="pt-10">
+        <section id="ingredientsContainer" className="pt-10">
             <h1 className="text_type_main-large mb-5">Соберите бургер</h1>
-            <div className={`${BurgerIngredientsStyles.tabs} mb-10`}>
+            <div id="tabs" className={`${BurgerIngredientsStyles.tabs} mb-10`}>
                 <Tab value="one" active={current === 'one'} onClick={setCurrent}>
                     Булки
                 </Tab>
@@ -107,30 +128,30 @@ const BurgerIngredients = (props) => {
                     Начинки
                 </Tab>
             </div>
-            <section className={BurgerIngredientsStyles.ingredients_scroll}>
+            <section id="scrollContainer" className={BurgerIngredientsStyles.ingredients_scroll}>
                 <section id="rolls" className="mb-10">
-                    <h2 className="text_type_main-medium mb-6">Булки</h2>
+                    <h2 id="rollsHeader" className="section-header text_type_main-medium mb-6">Булки</h2>
                     <section className={BurgerIngredientsStyles.ingredients}>
                         {rollsItems}
                     </section>
                 </section>
                 <section id="sauces" className="mb-10">
-                    <h2 className="text_type_main-medium mb-6">Соусы</h2>
+                    <h2 id="saucesHeader" className="section-header text_type_main-medium mb-6">Соусы</h2>
                     <section className={BurgerIngredientsStyles.ingredients}>
                         {saucesItems}
                     </section>
                 </section>
                 <section id="fillings" className="mb-10">
-                    <h2 className="text_type_main-medium mb-6">Начинки</h2>
+                    <h2 id="fillingsHeader" className="section-header text_type_main-medium mb-6">Начинки</h2>
                     <section className={BurgerIngredientsStyles.ingredients}>
                         {fillingsItems}
                     </section>
                 </section>
                 {
-                    modalVisible ?
-                        <Modal title="Детали ингредиента" onClose={closeModal}>
-                            <IngredientDetails {...ingredientDetails} />
-                        </Modal> : ''
+                    modalVisible &&
+                    <Modal title="Детали ингредиента" onClose={closeModal}>
+                        <IngredientDetails {...viewedIngredient} />
+                    </Modal>
                 }
             </section>
         </section>
@@ -153,7 +174,7 @@ const ingredientObject = PropTypes.shape({
 })
 
 BurgerIngredients.propTypes = {
-    ingredients:  PropTypes.arrayOf(ingredientObject).isRequired
+    ingredients: PropTypes.arrayOf(ingredientObject).isRequired
 };
 
 export default BurgerIngredients;
