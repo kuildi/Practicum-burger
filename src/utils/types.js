@@ -1,0 +1,2 @@
+export const INGREDIENT = 'INGREDIENT';
+export const CONSTRUCTOR_ITEM = 'CONSTRUCTOR_ITEM';

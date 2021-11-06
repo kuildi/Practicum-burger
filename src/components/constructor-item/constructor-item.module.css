@@ -1,0 +1,8 @@
+.constructor__item {
+    display: flex;
+    align-items: center;
+}
+
+.cursor_grab {
+    cursor: grab;
+}

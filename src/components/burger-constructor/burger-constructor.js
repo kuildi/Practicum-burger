@@ -1,33 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useDrop } from "react-dnd";
 
-import { ConstructorElement, Button, DragIcon, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import { Button, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import BurgerConstructorStyles from './burger-constructor.module.css';
+import { ADD_CONSTRUCTOR_ITEM, REPLACE_CONSTRUCTOR_BUN } from '../../services/actions/constants';
+import { INGREDIENT } from '../../utils/types';
 import Modal from '../modal/modal';
 import OrderDetails from '../order-details/order-details';
-import PropTypes from 'prop-types';
+import ConstructorItem from '../constructor-item/constructor-item';
+import { getOrder } from '../../services/actions';
 
-const BurgerConstructor = (props) => {
+const BurgerConstructor = () => {
+    const dispatch = useDispatch();
+    const ingredients = useSelector(store => store.ingredients.ingredientsConstructor);
     const [modalVisible, setModalVisible] = useState(false);
+    const itemsIds = [];
 
-    const totalCost = props.ingredients.reduce((sum, current) => sum + current.price, 0);
-    const constructorItems = props.ingredients.map((item, i) => {
-        return (
-            <div key={i} className={`${BurgerConstructorStyles.constructor__item} 
-            ${i === 0 ? "ml-8" : ''}`} >
-                {i === 0 ? '' : <DragIcon />}
-                <ConstructorElement
-                    type={i === 0 ? "top" : ''}
-                    isLocked={i === 0 ? true : false}
-                    text={`${item.name} ${i === 0 ? "(верх)" : ''}`}
-                    price={item.price}
-                    thumbnail={item.image}
-                />
-            </div>
-        );
+    const [{ highlighted }, dropTarget] = useDrop({
+        accept: INGREDIENT,
+        collect: monitor => ({
+            highlighted: monitor.canDrop(),
+        }),
+        drop(item) {
+            if (ingredients.find(item => item.type === 'bun') && item.type === 'bun') {
+                dispatch({
+                    type: REPLACE_CONSTRUCTOR_BUN,
+                    item: { ...item, itemKey: Math.floor(Math.random() * 300) }
+                })
+            } else {
+                dispatch({
+                    type: ADD_CONSTRUCTOR_ITEM,
+                    item: { ...item, itemKey: Math.floor(Math.random() * 300) }
+                })
+            }
+        }
     });
 
-    const showModal = () => {
-        setModalVisible(true)
+    const totalCost = ingredients.reduce((sum, current) => (
+        sum + (current.type === 'bun' ? 2 * current.price : current.price)
+    ), 0);
+
+    const constructorItems = ingredients.map((item) => {
+        if (item.type !== 'bun') {
+            return (
+                <ConstructorItem key={item.itemKey} {...item} />
+            )
+        } else return null;
+    });
+
+    const topBun = ingredients.map((item) => {
+        if (item.type === 'bun') {
+            return (
+                <ConstructorItem key={item.itemKey} itemType="top" addText="(верх)" {...item} />
+            )
+        } else return null;
+    })
+
+    const bottomBun = ingredients.map((item) => {
+        if (item.type === 'bun') {
+            return (
+                <ConstructorItem key={item.itemKey} itemType="bottom" addText="(низ)" {...item} />
+            )
+        } else return null;
+    })
+
+    const makeOrder = () => {
+        ingredients.forEach(item => {
+            itemsIds.push(item._id);
+        });
+        dispatch(getOrder(itemsIds));
+        setModalVisible(true);
     }
 
     const closeModal = (e) => {
@@ -35,7 +78,7 @@ const BurgerConstructor = (props) => {
             setModalVisible(false);
         } else {
             let target = e.nativeEvent.target;
-    
+
             if (target.getAttribute('backdrop')) {
                 setModalVisible(false);
             } else if (target.closest('span') && target.closest('span').getAttribute('backdrop')) {
@@ -46,58 +89,40 @@ const BurgerConstructor = (props) => {
 
     return (
         <section className="pt-25 pl-4 pr-4">
-            <section className={BurgerConstructorStyles.constructor__list}>
-                {constructorItems[0]}
-                <div className={BurgerConstructorStyles.constructor_scroll}>
-                    {constructorItems.slice(1, constructorItems.length)}
-                </div>
-                <div className="ml-8">
-                    <ConstructorElement
-                        type="bottom"
-                        isLocked="true"
-                        text={`${props.ingredients[0].name} (низ)`}
-                        price={props.ingredients[0].price}
-                        thumbnail={props.ingredients[0].image}
-                    />
-                </div>
+            <section ref={dropTarget} className={`${BurgerConstructorStyles.constructor__list} ${highlighted && BurgerConstructorStyles.bordered}`} style={{ minHeight: 300 }}>
+                {
+                    ingredients.length > 0 ?
+                        <>
+                            {topBun}
+                            <div className={BurgerConstructorStyles.constructor_scroll}>
+                                {constructorItems}
+                            </div>
+                            {bottomBun}
+                        </>
+                        : <p className={`${BurgerConstructorStyles.align_center} text_type_main-medium`}>
+                            Место для вашего бургера
+                        </p>
+                }
+
             </section>
             <footer className={`${BurgerConstructorStyles.constructor__info} mt-10`}>
                 <div className="mr-10">
                     <span className="text_type_digits-medium mr-2">{totalCost}</span>
                     <CurrencyIcon />
                 </div>
-                <Button type="primary" size="large" onClick={showModal}>
+                <Button type="primary" size="large" onClick={makeOrder}>
                     Оформить заказ
                 </Button>
             </footer>
 
             {
-                modalVisible ?
-                    <Modal onClose={closeModal}>
-                        <OrderDetails />
-                    </Modal> : ''
+                modalVisible &&
+                <Modal onClose={closeModal}>
+                    <OrderDetails />
+                </Modal>
             }
         </section>
     );
 }
-
-const ingredientObject = PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    proteins: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
-    carbohydrates: PropTypes.number.isRequired,
-    calories: PropTypes.number.isRequired,
-    price: PropTypes.number.isRequired,
-    image: PropTypes.string.isRequired,
-    image_mobile: PropTypes.string,
-    image_large: PropTypes.string,
-    __v: PropTypes.number
-})
-
-BurgerConstructor.propTypes = {
-    ingredients: PropTypes.arrayOf(ingredientObject).isRequired
-};
 
 export default BurgerConstructor;
