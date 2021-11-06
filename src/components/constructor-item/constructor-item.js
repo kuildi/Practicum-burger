@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import ConstructorItemStyles from './constructor-item.module.css';
 import { ConstructorElement, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { REMOVE_CONSTRUCTOR_ITEM, DRAG_SORT } from "../../services/actions/constants";
-
+import { CONSTRUCTOR_ITEM } from "../../utils/types";
 
 const ConstructorItem = (props) => {
     const dispatch = useDispatch();
@@ -22,7 +22,7 @@ const ConstructorItem = (props) => {
 
 
     const [, drop] = useDrop({
-        accept: 'constructorIngredient',
+        accept: CONSTRUCTOR_ITEM,
         hover(item, monitor) {
             if (!ref.current) {
                 return;
@@ -51,12 +51,10 @@ const ConstructorItem = (props) => {
                 dragIndex: dragIndex,
                 hoverIndex: hoverIndex
             })
-
-            item.itemKey = hoverIndex;
         },
     });
     const [{ isDragging }, drag] = useDrag({
-        type: 'constructorIngredient',
+        type: CONSTRUCTOR_ITEM,
         item: { ...props },
         canDrag: isBun ? false : true,
         collect: (monitor) => ({

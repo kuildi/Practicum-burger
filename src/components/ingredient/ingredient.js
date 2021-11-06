@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useDrag } from "react-dnd";
 import PropTypes from 'prop-types';
 
+import { INGREDIENT } from "../../utils/types";
 import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import IngredientStyles from './ingredient.module.css';
 
@@ -11,7 +12,7 @@ const Ingredient = (props) => {
     const constructorIngredients = useSelector(store => store.ingredients.ingredientsConstructor);
     const ingredientAmount = constructorIngredients.filter(item => item._id === props._id).length;
     const [{ opacity }, dragRef] = useDrag({
-        type: 'ingredient',
+        type: INGREDIENT,
         item: { ...props },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.4 : 1
@@ -20,7 +21,7 @@ const Ingredient = (props) => {
 
     return (
         <div id={props._id} ref={dragRef} className={IngredientStyles.card} style={{ opacity }} onClick={props.onClick}>
-            {ingredientAmount > 0 && <Counter count={ingredientAmount} size="default" />}
+            {ingredientAmount > 0 && <Counter count={props.type === 'bun' ? 2 : ingredientAmount} size="default" />}
             <img src={props.image} alt={props.name} className={IngredientStyles.card__img} />
             <div className={IngredientStyles.card__price}>
                 <p className="text_type_digits-default mr-1">{props.price}</p>

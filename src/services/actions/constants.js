@@ -1,5 +1,4 @@
-export const API_URL = 'https://norma.nomoreparties.space/api/ingredients';
-export const API_ORDERS_URL = 'https://norma.nomoreparties.space/api/orders';
+export const API_URL = 'https://norma.nomoreparties.space/api';
 
 export const GET_INGREDIENTS = 'GET_INGREDIENTS';
 export const GET_INGREDIENTS_SUCCESS = 'GET_INGREDIENTS_SUCCESS';

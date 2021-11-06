@@ -5,6 +5,7 @@ import { useDrop } from "react-dnd";
 import { Button, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import BurgerConstructorStyles from './burger-constructor.module.css';
 import { ADD_CONSTRUCTOR_ITEM, REPLACE_CONSTRUCTOR_BUN } from '../../services/actions/constants';
+import { INGREDIENT } from '../../utils/types';
 import Modal from '../modal/modal';
 import OrderDetails from '../order-details/order-details';
 import ConstructorItem from '../constructor-item/constructor-item';
@@ -17,7 +18,7 @@ const BurgerConstructor = () => {
     const itemsIds = [];
 
     const [{ highlighted }, dropTarget] = useDrop({
-        accept: 'ingredient',
+        accept: INGREDIENT,
         collect: monitor => ({
             highlighted: monitor.canDrop(),
         }),

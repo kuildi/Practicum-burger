@@ -11,7 +11,6 @@ import { getIngredients } from '../../services/actions';
 
 function App() {
   const dispatch = useDispatch();
-  const data = useSelector(store => store.ingredients.items);
   const loader = useSelector(store => store.ingredients.ingredientsRequest)
 
   useEffect(() => {
@@ -28,7 +27,7 @@ function App() {
         <AppHeader />
         <section className={AppStyles.main_container}>
           <DndProvider backend={HTML5Backend}>
-            <BurgerIngredients ingredients={data} />
+            <BurgerIngredients />
             <BurgerConstructor />
           </DndProvider>
         </section>

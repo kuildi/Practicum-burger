@@ -1,6 +1,5 @@
 import {
     API_URL,
-    API_ORDERS_URL,
     GET_INGREDIENTS,
     GET_INGREDIENTS_SUCCESS,
     GET_INGREDIENTS_FAILED,
@@ -15,7 +14,7 @@ export function getIngredients() {
             type: GET_INGREDIENTS
         })
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(`${API_URL}/ingredients`);
 
             if (!response.ok) {
                 dispatch({
@@ -44,7 +43,7 @@ export function getOrder(data) {
             type: GET_ORDER_NUMBER
         })
         try {
-            const response = await fetch(API_ORDERS_URL, {
+            const response = await fetch(`${API_URL}/orders`, {
                 method: 'POST',
                 cache: 'no-cache',
                 headers: {

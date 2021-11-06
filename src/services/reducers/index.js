@@ -79,14 +79,18 @@ export const ingredients = (state = initialState, action) => {
             };
         }
         case DRAG_SORT: {
-            const constructorArr = state.ingredientsConstructor;
-            const indexFrom = constructorArr.indexOf(constructorArr.find(item => item.itemKey === action.hoverIndex));
-            const indexTo = constructorArr.indexOf(constructorArr.find(item => item.itemKey === action.dragIndex));
-            console.log('new', ...constructorArr.splice(indexFrom, 0, constructorArr.splice(indexTo, 1)[0]));
+            const newConstructorArr = [...state.ingredientsConstructor];
+            const indexTo = newConstructorArr.indexOf(newConstructorArr.find(item => item.itemKey === action.hoverIndex));
+            const indexFrom = newConstructorArr.indexOf(newConstructorArr.find(item => item.itemKey === action.dragIndex));
+            const dragItem = newConstructorArr[indexFrom];
+
+            newConstructorArr.splice(indexFrom, 1);
+            newConstructorArr.splice(indexTo, 0, dragItem);
+            
             return {
-                ...state,
-                ingredientsConstructor: [...constructorArr, ...constructorArr.splice(indexTo, 0, constructorArr.splice(indexFrom, 1)[0])]
-            };
+                ...state, 
+                ingredientsConstructor: newConstructorArr
+            }
         }
         default: {
             return state;
